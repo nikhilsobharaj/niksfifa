@@ -132,22 +132,32 @@ export async function saveRemoteData(state) {
   const secret = sessionStorage.getItem("contest_admin_secret") || CONFIG.ADMIN_SECRET;
   if (secret) headers.Authorization = `Bearer ${secret}`;
 
-  const response = await fetch(CONFIG.DATA_API_URL, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(payload)
-  });
+  try {
+    const response = await fetch(CONFIG.DATA_API_URL, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload)
+    });
 
-  if (response.status === 401) {
-    throw new Error("Unauthorized — enter the admin password when prompted.");
+    if (response.status === 401) {
+      throw new Error("Unauthorized — enter the admin password when prompted.");
+    }
+
+    if (!response.ok) {
+      // If the remote endpoint doesn't exist (404) or returns an error, fall back to local save
+      const text = await response.text().catch(() => "");
+      console.warn(`Remote save failed (${response.status}). Falling back to local save. ${text}`);
+      saveToLocalStorage(payload);
+      return payload;
+    }
+
+    return payload;
+  } catch (err) {
+    // Network failure or other exception — persist locally so admin doesn't lose data
+    console.warn("Remote save failed (network or exception). Falling back to local save.", err);
+    saveToLocalStorage(payload);
+    return payload;
   }
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || `Save failed (${response.status}).`);
-  }
-
-  return payload;
 }
 
 export function getAdminSecret() {
