@@ -33,7 +33,12 @@ export const TEAM_FLAG_CODES = {
   "Ghana": "gh"
 };
 
+// Complete Round of 32 fixtures (16 matches)
 export const DEFAULT_FIXTURES = [
+  { id: 73, timeIST: "29 Jun, 12:30 AM IST", home: "South Africa", away: "Canada" },
+  { id: 76, timeIST: "29 Jun, 10:30 PM IST", home: "Brazil", away: "Japan" },
+  { id: 74, timeIST: "30 Jun, 2:00 AM IST", home: "Germany", away: "Paraguay" },
+  { id: 75, timeIST: "30 Jun, 6:30 AM IST", home: "Netherlands", away: "Morocco" },
   { id: 78, timeIST: "30 Jun, 10:30 PM IST", home: "Ivory Coast", away: "Norway" },
   { id: 77, timeIST: "1 Jul, 2:30 AM IST", home: "France", away: "Sweden" },
   { id: 79, timeIST: "1 Jul, 6:30 AM IST", home: "Mexico", away: "Ecuador" },
@@ -45,50 +50,72 @@ export const DEFAULT_FIXTURES = [
   { id: 85, timeIST: "3 Jul, 8:30 AM IST", home: "Switzerland", away: "Algeria" },
   { id: 88, timeIST: "3 Jul, 11:30 PM IST", home: "Australia", away: "Egypt" },
   { id: 86, timeIST: "4 Jul, 3:30 AM IST", home: "Argentina", away: "Cape Verde" },
-  { id: 87, timeIST: "4 Jul, 7:00 AM IST", home: "Colombia", away: "Ghana" }
+  { id: 87, timeIST: "4 Jul, 7:00 AM IST", home: "Colombia", away: "Ghana" },
+  // Round of 16 fixtures (8 matches) - First Scorer contests enabled from match 89+
+  { id: 90, timeIST: "4 Jul, 10:30 PM IST", home: "Canada", away: "Morocco" },
+  { id: 89, timeIST: "5 Jul, 2:30 AM IST", home: "Paraguay", away: "France" },
+  { id: 91, timeIST: "6 Jul, 1:30 AM IST", home: "Brazil", away: "Norway" },
+  { id: 92, timeIST: "6 Jul, 5:30 AM IST", home: "Mexico", away: "England" },
+  { id: 93, timeIST: "7 Jul, 12:30 AM IST", home: "Portugal", away: "Spain" },
+  { id: 94, timeIST: "7 Jul, 5:30 AM IST", home: "United States", away: "Belgium" },
+  { id: 95, timeIST: "7 Jul, 9:30 PM IST", home: "Argentina", away: "Egypt" },
+  { id: 96, timeIST: "8 Jul, 1:30 AM IST", home: "Switzerland", away: "Colombia" }
 ];
 
 export const DEFAULT_PARTICIPANT_META = {
   "Nikhil Sobharaj": {
-    photo: "https://drive.google.com/file/d/1rivrMQMdAVD45LNCOf6r3PzliDKlavAt/view?usp=drivesdk",
+    photo: "https://drive.google.com/file/d/1r4lJEJui2LSQkZGHFc_zMvk1FrIllCAZ/view?usp=drivesdk",
     fanCountry: "Portugal"
   },
-  "Praveen Raj S": {
-    photo: "https://drive.google.com/file/d/12gYsxupbsWUk3V08emdsg5wdz3DRfNIJ/view?usp=drivesdk",
+  "Anuranjan VP": {
+    photo: "https://drive.google.com/file/d/14ahRdI5X_Hnu188TbXZ0qPTYWuUXbADt/view?usp=drivesdk",
+    fanCountry: "Brazil"
+  },
+  "Abdul Salim": {
+    photo: "https://drive.google.com/file/d/1I90z-fpnzn_b8hqEVUmTek6hNwvZ2JN5/view?usp=drivesdk",
+    fanCountry: "France"
+  },
+  "Fajer Yousufali": {
+    photo: "https://drive.google.com/file/d/1AccF1sFUH7EDPKo4vft0GUaBjMkNzzjx/view?usp=drivesdk",
+    fanCountry: "Argentina"
+  },
+  "Freddy TV": {
+    photo: "https://drive.google.com/file/d/1fsPkyCpuCpJB6nouEko4WxX6ufdXFDhR/view?usp=drivesdk",
+    fanCountry: "Argentina"
+  },
+  "George Jose": {
+    photo: "https://drive.google.com/file/d/1fWmba9o_rYVcHnGorndr--sGOCFzVn99/view?usp=drivesdk",
+    fanCountry: "Croatia"
+  },
+  "Jojo Varghese": {
+    photo: "https://drive.google.com/file/d/1a-DAALipex-L1seE5JPli5lbNiVhJQQF/view?usp=drivesdk",
+    fanCountry: "Argentina"
+  },
+  "Jomy Jose": {
+    photo: "https://drive.google.com/file/d/1sWM9XE7aOe4POTvPxwZ5jQl2s30GjFo5/view?usp=drivesdk",
+    fanCountry: "Brazil"
+  },
+  "Jubil James": {
+    photo: "https://drive.google.com/file/d/1lRnurDKWs-W_aixXmTMF06y4Hp_UWatY/view?usp=drivesdk",
     fanCountry: "England"
   },
-  "Anupkumar": {
-    photo: "https://drive.google.com/file/d/1dJ-DYewd2nJTewPmdiFWWB2XYV2FYwrf/view?usp=drivesdk",
-    fanCountry: "Argentina"
+  "Prince K Lonappan": {
+    photo: "https://drive.google.com/file/d/1492UREqi2uLc1UUS3crk5jBLIAUpR6nR/view?usp=drivesdk",
+    fanCountry: "Belgium"
   },
-  "Mrudush Cholayil": {
-    photo: "https://drive.google.com/file/d/1U4nHoejQho0GlX2OhZoJjqzRZIv1arhx/view?usp=drivesdk",
-    fanCountry: "Argentina"
-  },
-  "Rajesh Kumar KP": {
-    photo: "https://drive.google.com/file/d/1lsTn_fVO_7UUNHrLYy2vBH6k0yfyB7Lr/view?usp=drivesdk",
+  "Sijo Joseph K": {
+    photo: "https://drive.google.com/file/d/1ppFgeLjW2P_oXc1zpj67B4Ij_R6D4k49/view?usp=drivesdk",
     fanCountry: "Brazil"
   },
-  "Renjith NP": {
-    photo: "https://drive.google.com/file/d/1LStL1rQRUr0U0TPrTemeK9G4OSgtSZoe/view?usp=drivesdk",
-    fanCountry: "Brazil"
-  },
-  "Saji": {
-    photo: "https://drive.google.com/file/d/1wNYCAhR6ZZ1cvelUVJ3Txrw5BSO5PMBj/view?usp=drivesdk",
-    fanCountry: "Argentina"
-  },
-  "Sreejith": {
-    photo: "https://drive.google.com/file/d/19Xi9tEIPjS5wGaBuKXrZkgMEhaemSnsL/view?usp=drivesdk",
-    fanCountry: "Argentina",
-    photoFocus: "center 18%"
-  },
-  "Navavi": {
-    fanCountry: "Spain"
+  "Sunil Paul": {
+    photo: "https://drive.google.com/file/d/11zaCRSsAekQzvdEZcb4jD_Q_9IUzRU9D/view?usp=drivesdk",
+    fanCountry: "Germany"
   }
 };
 
 export const DEFAULT_PARTICIPANTS = Object.keys(DEFAULT_PARTICIPANT_META);
 
+// First Scorer contests enabled from match 89 onwards (Round of 16)
 export const FIRST_SCORER_MIN_MATCH_ID = 89;
 export const FIRST_SCORER_NO_GOAL = "No Goal";
 
