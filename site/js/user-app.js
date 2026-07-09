@@ -46,7 +46,8 @@ async function init() {
   setStatus(elements.statusBar, "Loading contest data…");
 
   try {
-    state = await loadContestData({ preferRemote: true, allowLocalFallback: false });
+    // Allow falling back to bundled/local data when the remote API isn't available
+    state = await loadContestData({ preferRemote: true, allowLocalFallback: true });
     setStatus(elements.statusBar, `Data source: ${getDataSourceLabel()}`, "success");
     render();
   } catch (err) {
@@ -59,7 +60,7 @@ init();
 // Refresh every 60 seconds so users see admin updates
 setInterval(async () => {
   try {
-    const fresh = await loadContestData({ preferRemote: true, allowLocalFallback: false });
+    const fresh = await loadContestData({ preferRemote: true, allowLocalFallback: true });
     state = fresh;
     render();
   } catch {
