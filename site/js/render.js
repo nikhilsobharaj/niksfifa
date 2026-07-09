@@ -1,5 +1,6 @@
 import { CONFIG } from "./config.js";
 import { computePayouts, FIRST_SCORER_NO_GOAL, isFirstScorerMatch, getParticipantsForMatch } from "./compute.js";
+import { getRoundLabel, shouldShowRoundHeading } from "./constants.js";
 import {
   formatRs,
   getFixtureLabelHtml,
@@ -106,7 +107,10 @@ export function renderFixtures(state, container, {
   if (!container) return;
   container.innerHTML = "";
 
-  (state.fixtures || []).forEach(f => {
+  const fixtures = state.fixtures || [];
+  let prevMatchId = null;
+
+  fixtures.forEach(f => {
     const matchId = Number(f.id);
     const activeParticipants = getParticipantsForMatch(state.participants, matchId);
     const match = state.matches.find(m => m.id === f.id) || {
@@ -115,6 +119,15 @@ export function renderFixtures(state, container, {
       firstScorerResult: "",
       firstScorerPredictions: {}
     };
+
+    // Add round heading if round changed
+    if (shouldShowRoundHeading(matchId, prevMatchId)) {
+      const heading = document.createElement("div");
+      heading.className = "round-heading";
+      heading.innerHTML = `<h3>${getRoundLabel(matchId)}</h3>`;
+      container.appendChild(heading);
+    }
+
     const hasResult = Boolean(match.result);
     const details = document.createElement("details");
     details.className = "fixture";
@@ -262,6 +275,7 @@ export function renderFixtures(state, container, {
 
     details.appendChild(body);
     container.appendChild(details);
+    prevMatchId = matchId;
   });
 }
 
