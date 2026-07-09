@@ -26,6 +26,14 @@ function computeMatchPayout({ participants, bet, result, predictions, getPredict
   return { pool, result, winners, payoutPerWinner };
 }
 
+function getRoundForMatch(matchId) {
+  const id = Number(matchId);
+  if (id < 89) return "round32";
+  if (id < 97) return "round16";
+  if (id < 101) return "quarterfinals";
+  return "";
+}
+
 export function computePayouts(state) {
   const fixtures = state.fixtures || [];
   const betPerMatch = getBetPerMatch(state);
@@ -51,7 +59,10 @@ export function computePayouts(state) {
       name,
       correct: 0,
       won: 0,
-      net: -stakePerParticipant
+      net: -stakePerParticipant,
+      round32: 0,
+      round16: 0,
+      quarterfinals: 0
     };
   });
 
@@ -61,6 +72,7 @@ export function computePayouts(state) {
     const matchId = Number(f.id);
     const activeParticipants = getParticipantsForMatch(state.participants, matchId);
     const match = state.matches.find(m => m.id === f.id) || { result: "", predictions: {} };
+    const round = getRoundForMatch(matchId);
 
     const { pool, result, winners, payoutPerWinner } = computeMatchPayout({
       participants: activeParticipants,
@@ -75,6 +87,9 @@ export function computePayouts(state) {
         participantStats[name].correct += 1;
         participantStats[name].won += payoutPerWinner;
         participantStats[name].net += payoutPerWinner;
+        if (round) {
+          participantStats[name][round] += payoutPerWinner;
+        }
       });
     }
 
@@ -98,6 +113,8 @@ export function computePayouts(state) {
       firstScorerResult: "",
       firstScorerPredictions: {}
     };
+    const round = getRoundForMatch(matchId);
+    
     const { pool, result, winners, payoutPerWinner } = computeMatchPayout({
       participants: activeParticipants,
       bet: betFirstScorer,
@@ -111,6 +128,9 @@ export function computePayouts(state) {
         participantStats[name].correct += 1;
         participantStats[name].won += payoutPerWinner;
         participantStats[name].net += payoutPerWinner;
+        if (round) {
+          participantStats[name][round] += payoutPerWinner;
+        }
       });
     }
 
