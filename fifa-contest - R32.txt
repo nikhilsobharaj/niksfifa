@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DonBosco 96 FIFA Contest Tracker(Round of 32)</title>
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #d1d5db;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --danger: #dc2626;
+      --success-bg: #dcfce7;
+      --warn-bg: #fef3c7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(rgba(244, 246, 251, 0.86), rgba(244, 246, 251, 0.92)),
+        url('https://commons.wikimedia.org/wiki/Special:FilePath/Lionel_Messi_20180626.jpg'),
+        url('https://commons.wikimedia.org/wiki/Special:FilePath/Cristiano_Ronaldo_2018.jpg'),
+        url('https://commons.wikimedia.org/wiki/Special:FilePath/Kylian_Mbappe_2017.jpg');
+      background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+      background-size: cover, 35% auto, 33% auto, 31% auto;
+      background-position: center, left 0.8% bottom 2%, center bottom 0%, right 0.8% bottom 2%;
+      background-attachment: fixed, fixed, fixed, fixed;
+      color: var(--text);
+    }
+    .page-layout {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .wrap {
+      width: 100%;
+      padding: 0;
+    }
+    h1, h2, h3 { margin: 0 0 12px; }
+    .sub { color: var(--muted); margin-bottom: 14px; }
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      border-radius: 14px;
+      padding: 15px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+      background: rgba(255, 255, 255, 0.8);
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    input[type="text"], select, button {
+      font-size: 14px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+    input[type="text"] { min-width: 220px; }
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: 1px solid var(--primary);
+      cursor: pointer;
+    }
+    button:hover { background: var(--primary-dark); }
+    .btn-danger {
+      background: #fff;
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+    .btn-danger:hover {
+      background: #fee2e2;
+    }
+    button, select, input[type="text"], details, .chip {
+      transition: all 0.2s ease;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      background: #fff;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .chip.fan-bg {
+      border-color: rgba(148, 163, 184, 0.65);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+    }
+    .chip button {
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #fff;
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+    .chip .name-with-avatar span:last-child {
+      font-size: 26px;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1.05;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.95), 0 0 8px rgba(255, 255, 255, 0.72);
+    }
+    .fixtures {
+      display: grid;
+      gap: 12px;
+    }
+    details {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(16, 185, 129, 0.08));
+      border-bottom: 1px solid var(--line);
+    }
+    summary::-webkit-details-marker { display: none; }
+    .fixture-body { padding: 12px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      font-size: 13px;
+    }
+    th {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.14), rgba(14, 165, 233, 0.1));
+    }
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .kpi .card {
+      padding: 10px;
+    }
+    .value { font-size: 20px; font-weight: 700; }
+    .ok { background: var(--success-bg); }
+    .warn { background: var(--warn-bg); }
+    .small { color: var(--muted); font-size: 12px; }
+    .name-with-avatar {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .avatar.sm { width: 84px; height: 84px; }
+    .avatar.xs { width: 72px; height: 72px; }
+    .avatar.fallback {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .team-with-flag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .team-flag {
+      width: 24px;
+      height: 18px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: #fff;
+    }
+    .team-pair {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .vs {
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+    @media (max-width: 1150px) {
+      .page-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 760px) {
+      .page-layout { padding: 12px; }
+      .chip .name-with-avatar span:last-child { font-size: 20px; }
+      .avatar { width: 66px; height: 66px; }
+      .avatar.sm { width: 56px; height: 56px; }
+      .avatar.xs { width: 46px; height: 46px; }
+      table { font-size: 12px; }
+      th, td { padding: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-layout">
+  <div class="wrap grid">
+    <div class="card">
+      <h1>DonBosco 96 FIFA Contest Tracker(Round of 32)</h1>
+      <div class="sub">Bet per match per participant: ₹20 | 16 matches | Stake per participant: ₹320</div>
+      <div class="kpi">
+        <div class="card"><div class="small">Participants</div><div class="value" id="kpiParticipants">0</div></div>
+        <div class="card"><div class="small">Total Pool (all matches)</div><div class="value" id="kpiPool">₹0</div></div>
+        <div class="card"><div class="small">Matches with result entered</div><div class="value" id="kpiDone">0</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Participants</h2>
+      <div class="row">
+        <input id="participantInput" type="text" placeholder="Enter participant name" />
+        <button id="addParticipantBtn">+ Add participant</button>
+        <button id="resetBtn" class="btn-danger">↺ Reset all data</button>
+      </div>
+      <div id="participantsChips" class="chips"></div>
+    </div>
+
+    <div class="card">
+      <h2>Fixtures, Predictions and Results</h2>
+      <div class="sub">Open each match and choose result plus each participant prediction.</div>
+      <div id="fixtures" class="fixtures"></div>
+    </div>
+
+    <div class="card">
+      <h2>Payout by Match</h2>
+      <table id="matchPayoutTable">
+        <thead>
+          <tr>
+            <th>Match</th>
+            <th>Result</th>
+            <th>Winners</th>
+            <th>Pool</th>
+            <th>Payout per winner</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Contestant Winnings</h2>
+      <table id="contestantTable">
+        <thead>
+          <tr>
+            <th>Contestant</th>
+            <th>Fan country</th>
+            <th>Correct picks</th>
+            <th>Total won</th>
+            <th>Net after ₹320 stake</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  </div>
+
+  <script>
+    const BET_PER_MATCH = 20;
+    const STORAGE_KEY = "fifaContestRound32_v1";
+
+    const fixtures = [
+      { id: 73, timeIST: "29 Jun, 12:30 AM IST", home: "South Africa", away: "Canada" },
+      { id: 76, timeIST: "29 Jun, 10:30 PM IST", home: "Brazil", away: "Japan" },
+      { id: 74, timeIST: "30 Jun, 2:00 AM IST", home: "Germany", away: "Paraguay" },
+      { id: 75, timeIST: "30 Jun, 6:30 AM IST", home: "Netherlands", away: "Morocco" },
+      { id: 78, timeIST: "30 Jun, 10:30 PM IST", home: "Ivory Coast", away: "Norway" },
+      { id: 77, timeIST: "1 Jul, 2:30 AM IST", home: "France", away: "Sweden" },
+      { id: 79, timeIST: "1 Jul, 6:30 AM IST", home: "Mexico", away: "Ecuador" },
+      { id: 80, timeIST: "1 Jul, 9:30 PM IST", home: "England", away: "DR Congo" },
+      { id: 82, timeIST: "2 Jul, 1:30 AM IST", home: "Belgium", away: "Senegal" },
+      { id: 81, timeIST: "2 Jul, 5:30 AM IST", home: "United States", away: "Bosnia and Herzegovina" },
+      { id: 84, timeIST: "3 Jul, 12:30 AM IST", home: "Spain", away: "Austria" },
+      { id: 83, timeIST: "3 Jul, 4:30 AM IST", home: "Portugal", away: "Croatia" },
+      { id: 85, timeIST: "3 Jul, 8:30 AM IST", home: "Switzerland", away: "Algeria" },
+      { id: 88, timeIST: "3 Jul, 11:30 PM IST", home: "Australia", away: "Egypt" },
+      { id: 86, timeIST: "4 Jul, 3:30 AM IST", home: "Argentina", away: "Cape Verde" },
+      { id: 87, timeIST: "4 Jul, 7:00 AM IST", home: "Colombia", away: "Ghana" }
+    ];
+    const participantPhotos = {
+      "Abdul Salim": "https://drive.google.com/file/d/1I90z-fpnzn_b8hqEVUmTek6hNwvZ2JN5/view?usp=drivesdk",
+      "Anuranjan VP": "https://drive.google.com/file/d/14ahRdI5X_Hnu188TbXZ0qPTYWuUXbADt/view?usp=drivesdk",
+      "Freddy TV": "https://drive.google.com/file/d/1fsPkyCpuCpJB6nouEko4WxX6ufdXFDhR/view?usp=drivesdk",
+      "George Jose": "https://drive.google.com/file/d/1fWmba9o_rYVcHnGorndr--sGOCFzVn99/view?usp=drivesdk",
+      "Jojo Varghese": "https://drive.google.com/file/d/1a-DAALipex-L1seE5JPli5lbNiVhJQQF/view?usp=drivesdk",
+      "Jomy Jose": "https://drive.google.com/file/d/1sWM9XE7aOe4POTvPxwZ5jQl2s30GjFo5/view?usp=drivesdk",
+      "Jubil James": "https://drive.google.com/file/d/1lRnurDKWs-W_aixXmTMF06y4Hp_UWatY/view?usp=drivesdk",
+      "Nikhil Sobharaj": "https://drive.google.com/file/d/1r4lJEJui2LSQkZGHFc_zMvk1FrIllCAZ/view?usp=drivesdk",
+      "Prince K Lonappan": "https://drive.google.com/file/d/1492UREqi2uLc1UUS3crk5jBLIAUpR6nR/view?usp=drivesdk",
+      "Sijo Joseph K": "https://drive.google.com/file/d/1ppFgeLjW2P_oXc1zpj67B4Ij_R6D4k49/view?usp=drivesdk",
+      "Sunil Paul": "https://drive.google.com/file/d/11zaCRSsAekQzvdEZcb4jD_Q_9IUzRU9D/view?usp=drivesdk"
+    };
+    const participantFanCountries = {
+      "Nikhil Sobharaj": "Portugal",
+      "Anuranjan VP": "Brazil",
+      "Abdul Salim": "France",
+      "Freddy TV": "Argentina",
+      "Jojo Varghese": "Argentina",
+      "Sijo Joseph K": "Brazil",
+      "Jomy Jose": "Brazil",
+      "Jubil James": "England",
+      "Prince K Lonappan": "Belgium",
+      "Sunil Paul": "Germany",
+      "George Jose": "Croatia"
+    };
+    const teamFlagCodes = {
+      "South Africa": "za",
+      "Canada": "ca",
+      "Brazil": "br",
+      "Japan": "jp",
+      "Germany": "de",
+      "Paraguay": "py",
+      "Netherlands": "nl",
+      "Morocco": "ma",
+      "Ivory Coast": "ci",
+      "Norway": "no",
+      "France": "fr",
+      "Sweden": "se",
+      "Mexico": "mx",
+      "Ecuador": "ec",
+      "England": "gb-eng",
+      "DR Congo": "cd",
+      "Belgium": "be",
+      "Senegal": "sn",
+      "United States": "us",
+      "Bosnia and Herzegovina": "ba",
+      "Spain": "es",
+      "Austria": "at",
+      "Portugal": "pt",
+      "Croatia": "hr",
+      "Switzerland": "ch",
+      "Algeria": "dz",
+      "Australia": "au",
+      "Egypt": "eg",
+      "Argentina": "ar",
+      "Cape Verde": "cv",
+      "Colombia": "co",
+      "Ghana": "gh"
+    };
+
+    function createDefaultState() {
+      const participants = [
+        "Nikhil Sobharaj",
+        "Anuranjan VP",
+        "Abdul Salim",
+        "Freddy TV",
+        "Jojo Varghese",
+        "Sijo Joseph K",
+        "Jomy Jose",
+        "Prince K Lonappan",
+        "Sunil Paul",
+        "George Jose"
+      ];
+
+      const matches = fixtures.map(f => ({
+        id: f.id,
+        result: "",
+        predictions: {}
+      }));
+
+      const match73 = matches.find(m => m.id === 73);
+      if (match73) {
+        ["Sunil Paul", "Anuranjan VP", "Abdul Salim", "Jojo Varghese", "Sijo Joseph K", "Freddy TV"].forEach(n => match73.predictions[n] = "Canada");
+        ["Nikhil Sobharaj", "George Jose", "Jomy Jose", "Prince K Lonappan"].forEach(n => match73.predictions[n] = "South Africa");
+      }
+
+      return { participants, matches };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return createDefaultState();
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Array.isArray(parsed.participants) || !Array.isArray(parsed.matches)) return createDefaultState();
+        return parsed;
+      } catch {
+        return createDefaultState();
+      }
+    }
+
+    let state = loadState();
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function formatRs(n) {
+      const hasDecimal = Math.abs(n % 1) > 0.001;
+      return "₹" + n.toLocaleString("en-IN", {
+        minimumFractionDigits: hasDecimal ? 2 : 0,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function getMatchDef(id) {
+      return fixtures.find(f => f.id === id);
+    }
+
+    function getMatchState(id) {
+      return state.matches.find(m => m.id === id);
+    }
+
+    function getTeamFlagUrl(teamName) {
+      const code = teamFlagCodes[teamName];
+      return code ? `https://flagcdn.com/24x18/${code}.png` : "";
+    }
+
+    function getTeamFlagBackgroundUrl(teamName) {
+      const code = teamFlagCodes[teamName];
+      return code ? `https://flagcdn.com/w320/${code}.png` : "";
+    }
+
+    function getTeamLabelHtml(teamName) {
+      const flagUrl = getTeamFlagUrl(teamName);
+      if (!flagUrl) return teamName;
+      return `<span class="team-with-flag"><img class="team-flag" src="${flagUrl}" alt="${teamName} flag" />${teamName}</span>`;
+    }
+
+    function getFixtureLabelHtml(home, away) {
+      return `<span class="team-pair">${getTeamLabelHtml(home)} <span class="vs">vs</span> ${getTeamLabelHtml(away)}</span>`;
+    }
+
+    function getDriveFileId(url) {
+      if (!url) return "";
+      const drivePathMatch = url.match(/\/d\/([A-Za-z0-9_-]+)/);
+      const driveQueryMatch = url.match(/[?&]id=([A-Za-z0-9_-]+)/);
+      return drivePathMatch ? drivePathMatch[1] : (driveQueryMatch ? driveQueryMatch[1] : "");
+    }
+
+    function getPhotoCandidates(name) {
+      const rawUrl = participantPhotos[name];
+      if (!rawUrl) return [];
+      const fileId = getDriveFileId(rawUrl);
+      if (!fileId) return [encodeURI(rawUrl)];
+      return [
+        `https://lh3.googleusercontent.com/d/${fileId}`,
+        `https://lh3.googleusercontent.com/u/0/d/${fileId}`,
+        `https://drive.google.com/uc?export=download&id=${fileId}`,
+        `https://drive.google.com/uc?export=view&id=${fileId}`,
+        `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`,
+        rawUrl
+      ];
+    }
+
+    function createFallbackAvatar(name, sizeClass) {
+      const fallback = document.createElement("span");
+      fallback.className = `avatar fallback ${sizeClass}`;
+      fallback.textContent = (name[0] || "?").toUpperCase();
+      return fallback;
+    }
+
+    function getParticipantFanCountry(name) {
+      return participantFanCountries[name] || "";
+    }
+
+    function createParticipantLabel(name, sizeClass = "sm") {
+      const wrap = document.createElement("span");
+      wrap.className = "name-with-avatar";
+
+      const photoCandidates = getPhotoCandidates(name);
+      if (photoCandidates.length) {
+        const img = document.createElement("img");
+        img.className = `avatar ${sizeClass}`;
+        img.src = photoCandidates[0];
+        img.alt = name;
+        img.referrerPolicy = "no-referrer";
+        img.dataset.photoIndex = "0";
+        img.addEventListener("error", () => {
+          const nextIndex = Number(img.dataset.photoIndex || "0") + 1;
+          if (nextIndex < photoCandidates.length) {
+            img.dataset.photoIndex = String(nextIndex);
+            img.src = photoCandidates[nextIndex];
+            return;
+          }
+          if (img.parentElement) img.replaceWith(createFallbackAvatar(name, sizeClass));
+        });
+        wrap.appendChild(img);
+      } else {
+        wrap.appendChild(createFallbackAvatar(name, sizeClass));
+      }
+
+      const text = document.createElement("span");
+      text.textContent = name;
+      wrap.appendChild(text);
+      return wrap;
+    }
+
+    function addParticipant(name) {
+      const clean = name.trim();
+      if (!clean) return;
+      if (state.participants.includes(clean)) {
+        alert("Participant already exists.");
+        return;
+      }
+      state.participants.push(clean);
+      state.matches.forEach(m => {
+        m.predictions[clean] = "";
+      });
+      saveState();
+      render();
+    }
+
+    function removeParticipant(name) {
+      state.participants = state.participants.filter(p => p !== name);
+      state.matches.forEach(m => {
+        delete m.predictions[name];
+      });
+      saveState();
+      render();
+    }
+
+    function computePayouts() {
+      const stakePerParticipant = BET_PER_MATCH * fixtures.length;
+      const participantStats = Object.fromEntries(
+        state.participants.map(name => [name, { name, correct: 0, won: 0, net: -stakePerParticipant }])
+      );
+
+      const matchStats = fixtures.map(f => {
+        const match = getMatchState(f.id);
+        const pool = state.participants.length * BET_PER_MATCH;
+        const result = match.result;
+        let winners = [];
+        let payoutPerWinner = 0;
+
+        if (result) {
+          winners = state.participants.filter(name => match.predictions[name] === result);
+          payoutPerWinner = winners.length ? pool / winners.length : 0;
+          winners.forEach(name => {
+            participantStats[name].correct += 1;
+            participantStats[name].won += payoutPerWinner;
+            participantStats[name].net += payoutPerWinner;
+          });
+        }
+
+        return {
+          id: f.id,
+          home: f.home,
+          away: f.away,
+          result: result || "Pending",
+          winners,
+          pool,
+          payoutPerWinner
+        };
+      });
+
+      return {
+        stakePerParticipant,
+        matchStats,
+        participantStats: Object.values(participantStats).sort((a, b) => b.won - a.won)
+      };
+    }
+
+    function renderParticipants() {
+      const chips = document.getElementById("participantsChips");
+      chips.innerHTML = "";
+      state.participants.forEach(name => {
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        const fanCountry = getParticipantFanCountry(name);
+        const fanFlagBg = fanCountry ? getTeamFlagBackgroundUrl(fanCountry) : "";
+        if (fanFlagBg) {
+          chip.classList.add("fan-bg");
+          chip.style.backgroundImage = `url('${fanFlagBg}')`;
+          chip.title = `${name}, ${fanCountry} fan`;
+        }
+        chip.appendChild(createParticipantLabel(name, "xs"));
+        const btn = document.createElement("button");
+        btn.textContent = "x";
+        btn.addEventListener("click", () => {
+          if (confirm(`Remove participant "${name}"?`)) removeParticipant(name);
+        });
+        chip.appendChild(btn);
+        chips.appendChild(chip);
+      });
+    }
+
+    function renderFixtures() {
+      const container = document.getElementById("fixtures");
+      container.innerHTML = "";
+
+      fixtures.forEach(f => {
+        const match = getMatchState(f.id);
+        const details = document.createElement("details");
+
+        const summary = document.createElement("summary");
+        summary.innerHTML = `
+          <strong>Match ${f.id}: ${getFixtureLabelHtml(f.home, f.away)}</strong>
+          <span>${f.timeIST}</span>
+        `;
+        details.appendChild(summary);
+
+        const body = document.createElement("div");
+        body.className = "fixture-body";
+
+        const resultRow = document.createElement("div");
+        resultRow.className = "row";
+        resultRow.innerHTML = `<label><strong>Result:</strong></label> ${getFixtureLabelHtml(f.home, f.away)}`;
+        const resultSelect = document.createElement("select");
+        resultSelect.innerHTML = `
+          <option value="">Pending</option>
+          <option value="${f.home}">${f.home}</option>
+          <option value="${f.away}">${f.away}</option>
+        `;
+        resultSelect.value = match.result || "";
+        resultSelect.addEventListener("change", (e) => {
+          match.result = e.target.value;
+          saveState();
+          renderPayoutTables();
+        });
+        resultRow.appendChild(resultSelect);
+        body.appendChild(resultRow);
+
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        thead.innerHTML = `
+          <tr>
+            <th>Participant</th>
+            <th>Prediction</th>
+          </tr>
+        `;
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        state.participants.forEach(name => {
+          const tr = document.createElement("tr");
+          const tdName = document.createElement("td");
+          tdName.appendChild(createParticipantLabel(name, "xs"));
+          const tdPred = document.createElement("td");
+          const predSelect = document.createElement("select");
+          predSelect.innerHTML = `
+            <option value="">Not selected</option>
+            <option value="${f.home}">${f.home}</option>
+            <option value="${f.away}">${f.away}</option>
+          `;
+          predSelect.value = match.predictions[name] || "";
+          predSelect.addEventListener("change", (e) => {
+            match.predictions[name] = e.target.value;
+            saveState();
+            renderPayoutTables();
+          });
+          tdPred.appendChild(predSelect);
+          tr.appendChild(tdName);
+          tr.appendChild(tdPred);
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        body.appendChild(table);
+
+        details.appendChild(body);
+        container.appendChild(details);
+      });
+    }
+
+    function renderPayoutTables() {
+      const { stakePerParticipant, matchStats, participantStats } = computePayouts();
+      const done = matchStats.filter(m => m.result !== "Pending").length;
+      document.getElementById("kpiParticipants").textContent = state.participants.length;
+      document.getElementById("kpiPool").textContent = formatRs(state.participants.length * BET_PER_MATCH * fixtures.length);
+      document.getElementById("kpiDone").textContent = `${done} / ${fixtures.length}`;
+
+      const matchBody = document.querySelector("#matchPayoutTable tbody");
+      matchBody.innerHTML = "";
+      matchStats.forEach(m => {
+        const tr = document.createElement("tr");
+        const matchTd = document.createElement("td");
+        matchTd.innerHTML = getFixtureLabelHtml(m.home, m.away);
+        const resultTd = document.createElement("td");
+        resultTd.innerHTML = m.result === "Pending" ? "Pending" : getTeamLabelHtml(m.result);
+        const winnersTd = document.createElement("td");
+        winnersTd.textContent = m.winners.length ? m.winners.join(", ") : "-";
+        const poolTd = document.createElement("td");
+        poolTd.textContent = formatRs(m.pool);
+        const payoutTd = document.createElement("td");
+        payoutTd.textContent = m.result === "Pending" ? "-" : formatRs(m.payoutPerWinner);
+        tr.appendChild(matchTd);
+        tr.appendChild(resultTd);
+        tr.appendChild(winnersTd);
+        tr.appendChild(poolTd);
+        tr.appendChild(payoutTd);
+        if (m.result !== "Pending" && m.winners.length === 0) tr.className = "warn";
+        if (m.result !== "Pending" && m.winners.length > 0) tr.className = "ok";
+        matchBody.appendChild(tr);
+      });
+
+      const contestantBody = document.querySelector("#contestantTable tbody");
+      contestantBody.innerHTML = "";
+      participantStats.forEach(p => {
+        const tr = document.createElement("tr");
+        const nameTd = document.createElement("td");
+        nameTd.appendChild(createParticipantLabel(p.name, "sm"));
+        const fanCountryTd = document.createElement("td");
+        const fanCountry = getParticipantFanCountry(p.name);
+        fanCountryTd.innerHTML = fanCountry ? getTeamLabelHtml(fanCountry) : "-";
+        const correctTd = document.createElement("td");
+        correctTd.textContent = p.correct;
+        const wonTd = document.createElement("td");
+        wonTd.textContent = formatRs(p.won);
+        const netTd = document.createElement("td");
+        netTd.textContent = formatRs(p.net);
+        tr.appendChild(nameTd);
+        tr.appendChild(fanCountryTd);
+        tr.appendChild(correctTd);
+        tr.appendChild(wonTd);
+        tr.appendChild(netTd);
+        contestantBody.appendChild(tr);
+      });
+    }
+
+    function render() {
+      renderParticipants();
+      renderFixtures();
+      renderPayoutTables();
+    }
+
+    document.getElementById("addParticipantBtn").addEventListener("click", () => {
+      const input = document.getElementById("participantInput");
+      addParticipant(input.value);
+      input.value = "";
+      input.focus();
+    });
+
+    document.getElementById("participantInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("addParticipantBtn").click();
+      }
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (!confirm("Reset all participants, predictions and results?")) return;
+      state = createDefaultState();
+      saveState();
+      render();
+    });
+
+    state.matches = fixtures.map(f => {
+      const existing = state.matches.find(m => m.id === f.id);
+      if (!existing) return { id: f.id, result: "", predictions: {} };
+      return {
+        id: f.id,
+        result: existing.result || "",
+        predictions: existing.predictions || {}
+      };
+    });
+
+    state.participants = Array.from(new Set(state.participants.map(p => (p || "").trim()).filter(Boolean)));
+    saveState();
+    render();
+  </script>
+</body>
+</html>
