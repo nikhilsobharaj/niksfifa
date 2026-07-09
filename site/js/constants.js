@@ -33,8 +33,9 @@ export const TEAM_FLAG_CODES = {
   "Ghana": "gh"
 };
 
-// Complete Round of 32 fixtures (16 matches)
+// Complete tournament fixtures (32 Round of 32 + 8 Round of 16 + 4 Quarterfinals = 44 matches)
 export const DEFAULT_FIXTURES = [
+  // ===== ROUND OF 32 (Match IDs 73-88) =====
   { id: 73, timeIST: "29 Jun, 12:30 AM IST", home: "South Africa", away: "Canada" },
   { id: 76, timeIST: "29 Jun, 10:30 PM IST", home: "Brazil", away: "Japan" },
   { id: 74, timeIST: "30 Jun, 2:00 AM IST", home: "Germany", away: "Paraguay" },
@@ -51,7 +52,8 @@ export const DEFAULT_FIXTURES = [
   { id: 88, timeIST: "3 Jul, 11:30 PM IST", home: "Australia", away: "Egypt" },
   { id: 86, timeIST: "4 Jul, 3:30 AM IST", home: "Argentina", away: "Cape Verde" },
   { id: 87, timeIST: "4 Jul, 7:00 AM IST", home: "Colombia", away: "Ghana" },
-  // Round of 16 fixtures (8 matches) - First Scorer contests enabled from match 89+
+  
+  // ===== ROUND OF 16 (Match IDs 89-96) =====
   { id: 90, timeIST: "4 Jul, 10:30 PM IST", home: "Canada", away: "Morocco" },
   { id: 89, timeIST: "5 Jul, 2:30 AM IST", home: "Paraguay", away: "France" },
   { id: 91, timeIST: "6 Jul, 1:30 AM IST", home: "Brazil", away: "Norway" },
@@ -59,7 +61,13 @@ export const DEFAULT_FIXTURES = [
   { id: 93, timeIST: "7 Jul, 12:30 AM IST", home: "Portugal", away: "Spain" },
   { id: 94, timeIST: "7 Jul, 5:30 AM IST", home: "United States", away: "Belgium" },
   { id: 95, timeIST: "7 Jul, 9:30 PM IST", home: "Argentina", away: "Egypt" },
-  { id: 96, timeIST: "8 Jul, 1:30 AM IST", home: "Switzerland", away: "Colombia" }
+  { id: 96, timeIST: "8 Jul, 1:30 AM IST", home: "Switzerland", away: "Colombia" },
+  
+  // ===== QUARTERFINALS / ROUND OF 8 (Match IDs 97-100) =====
+  { id: 97, timeIST: "9 Jul, 12:30 AM IST", home: "France", away: "Brazil" },
+  { id: 98, timeIST: "9 Jul, 4:30 AM IST", home: "England", away: "Belgium" },
+  { id: 99, timeIST: "10 Jul, 12:30 AM IST", home: "Spain", away: "United States" },
+  { id: 100, timeIST: "10 Jul, 4:30 AM IST", home: "Argentina", away: "Switzerland" }
 ];
 
 export const DEFAULT_PARTICIPANT_META = {
@@ -135,4 +143,18 @@ export function getParticipantsForMatch(allParticipants, matchId) {
   }
   // Round of 16 and beyond: include all participants
   return allParticipants;
+}
+
+export function getRoundLabel(matchId) {
+  const id = Number(matchId);
+  if (id < 89) return "🔹 Round of 32";
+  if (id < 97) return "🔸 Round of 16";
+  if (id < 101) return "🏅 Quarterfinals (Round of 8)";
+  return "";
+}
+
+export function shouldShowRoundHeading(currentMatchId, prevMatchId) {
+  const currentRound = getRoundLabel(currentMatchId);
+  const prevRound = prevMatchId ? getRoundLabel(prevMatchId) : "";
+  return currentRound && currentRound !== prevRound;
 }
