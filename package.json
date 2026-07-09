@@ -1,0 +1,11 @@
+{
+  "name": "lsg-fifa-contest",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:deploy": "node scripts/build-deploy.mjs"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

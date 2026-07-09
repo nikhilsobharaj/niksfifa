@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# Generated drag-and-drop build (use: npm run build:deploy)
+deploy/
+
+# Local Netlify
+.netlify
+
+# Env / secrets
+.env
+.env.*
