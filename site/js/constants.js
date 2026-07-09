@@ -119,6 +119,20 @@ export const DEFAULT_PARTICIPANTS = Object.keys(DEFAULT_PARTICIPANT_META);
 export const FIRST_SCORER_MIN_MATCH_ID = 89;
 export const FIRST_SCORER_NO_GOAL = "No Goal";
 
+// Fajer Yousufali joins from Round of 16 (match 89 onwards)
+export const LATE_JOINER_MIN_MATCH_ID = 89;
+export const LATE_JOINER_NAME = "Fajer Yousufali";
+
 export function isFirstScorerMatch(matchId) {
   return Number(matchId) >= FIRST_SCORER_MIN_MATCH_ID;
+}
+
+export function getParticipantsForMatch(allParticipants, matchId) {
+  const id = Number(matchId);
+  if (id < LATE_JOINER_MIN_MATCH_ID) {
+    // Round of 32: exclude late joiner
+    return allParticipants.filter(p => p !== LATE_JOINER_NAME);
+  }
+  // Round of 16 and beyond: include all participants
+  return allParticipants;
 }
