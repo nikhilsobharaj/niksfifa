@@ -1,5 +1,5 @@
 import { CONFIG } from "./config.js";
-import { computePayouts, FIRST_SCORER_NO_GOAL, isFirstScorerMatch } from "./compute.js";
+import { computePayouts, FIRST_SCORER_NO_GOAL, isFirstScorerMatch, getParticipantsForMatch } from "./compute.js";
 import {
   formatRs,
   getFixtureLabelHtml,
@@ -49,7 +49,7 @@ export function renderSummary(state, elements) {
     if (firstScorerMatchCount > 0) {
       parts.push(`${formatRs(betFirstScorer)} first scorer (match ${89}+)`);
     }
-    parts.push(`${fixtures.length} matches · ${formatRs(stakePerParticipant)} stake each`);
+    parts.push(`${fixtures.length} matches · ${formatRs(stakePerParticipant)} average stake`);
     elements.betSummary.textContent = parts.join(" · ");
   }
   if (elements.kpiParticipants) elements.kpiParticipants.textContent = state.participants.length;
@@ -58,7 +58,7 @@ export function renderSummary(state, elements) {
   }
   if (elements.kpiDone) elements.kpiDone.textContent = `${done}/${totalContests}`;
   if (elements.netStakeHeader) {
-    elements.netStakeHeader.textContent = `Net (−${formatRs(stakePerParticipant)})`;
+    elements.netStakeHeader.textContent = `Net (varies by participant)`;
   }
 }
 
@@ -107,6 +107,8 @@ export function renderFixtures(state, container, {
   container.innerHTML = "";
 
   (state.fixtures || []).forEach(f => {
+    const matchId = Number(f.id);
+    const activeParticipants = getParticipantsForMatch(state.participants, matchId);
     const match = state.matches.find(m => m.id === f.id) || {
       result: "",
       predictions: {},
@@ -160,7 +162,7 @@ export function renderFixtures(state, container, {
     const predList = document.createElement("div");
     predList.className = "prediction-list";
 
-    state.participants.forEach(name => {
+    activeParticipants.forEach(name => {
       const prediction = match.predictions[name] || "";
       const row = document.createElement("div");
       row.className = "prediction-row";
@@ -223,7 +225,7 @@ export function renderFixtures(state, container, {
       const fsPredList = document.createElement("div");
       fsPredList.className = "prediction-list first-scorer-list";
 
-      state.participants.forEach(name => {
+      activeParticipants.forEach(name => {
         const fsPrediction = match.firstScorerPredictions?.[name] || "";
         const row = document.createElement("div");
         row.className = "prediction-row";
