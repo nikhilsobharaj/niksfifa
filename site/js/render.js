@@ -20,7 +20,10 @@ const TABLE_LABELS = {
   contestant: "Contestant",
   fan: "Fan country",
   correct: "Correct",
-  won: "Total won",
+  round32: "Round of 32",
+  round16: "Round of 16",
+  quarterfinals: "Quarterfinals",
+  totalWon: "Total Won",
   net: "Net"
 };
 
@@ -352,13 +355,24 @@ export function renderPayoutTables(state, elements) {
       const fanCountry = getParticipantFanCountry(p.name, state.participantMeta);
       setCell(fanCountryTd, TABLE_LABELS.fan, fanCountry ? getTeamLabelHtml(fanCountry) : "—");
 
-      const correctTd = document.createElement("td");
-      correctTd.setAttribute("data-label", TABLE_LABELS.correct);
-      correctTd.textContent = p.correct;
+      const round32Td = document.createElement("td");
+      round32Td.className = "col-round";
+      round32Td.setAttribute("data-label", TABLE_LABELS.round32);
+      round32Td.textContent = formatRs(p.round32);
 
-      const wonTd = document.createElement("td");
-      wonTd.setAttribute("data-label", TABLE_LABELS.won);
-      wonTd.textContent = formatRs(p.won);
+      const round16Td = document.createElement("td");
+      round16Td.className = "col-round";
+      round16Td.setAttribute("data-label", TABLE_LABELS.round16);
+      round16Td.textContent = formatRs(p.round16);
+
+      const quarterfinalsTd = document.createElement("td");
+      quarterfinalsTd.className = "col-round";
+      quarterfinalsTd.setAttribute("data-label", TABLE_LABELS.quarterfinals);
+      quarterfinalsTd.textContent = formatRs(p.quarterfinals);
+
+      const totalWonTd = document.createElement("td");
+      totalWonTd.setAttribute("data-label", TABLE_LABELS.totalWon);
+      totalWonTd.textContent = formatRs(p.won);
 
       const netTd = document.createElement("td");
       netTd.setAttribute("data-label", TABLE_LABELS.net);
@@ -368,8 +382,10 @@ export function renderPayoutTables(state, elements) {
 
       tr.appendChild(nameTd);
       tr.appendChild(fanCountryTd);
-      tr.appendChild(correctTd);
-      tr.appendChild(wonTd);
+      tr.appendChild(round32Td);
+      tr.appendChild(round16Td);
+      tr.appendChild(quarterfinalsTd);
+      tr.appendChild(totalWonTd);
       tr.appendChild(netTd);
       contestantBody.appendChild(tr);
     });
