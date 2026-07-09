@@ -1,5 +1,5 @@
 import { CONFIG } from "./config.js";
-import { FIRST_SCORER_NO_GOAL, isFirstScorerMatch } from "./constants.js";
+import { FIRST_SCORER_NO_GOAL, isFirstScorerMatch, getParticipantsForMatch } from "./constants.js";
 
 export function getBetPerMatch(state) {
   const value = Number(state.betPerMatch);
@@ -32,20 +32,38 @@ export function computePayouts(state) {
   const betFirstScorer = getBetFirstScorerPerMatch(state);
   const firstScorerFixtures = fixtures.filter(f => isFirstScorerMatch(f.id));
 
-  const winnerStake = betPerMatch * fixtures.length;
-  const firstScorerStake = betFirstScorer * firstScorerFixtures.length;
-  const stakePerParticipant = winnerStake + firstScorerStake;
+  // Calculate stakes per participant based on their participation window
+  const round32Fixtures = fixtures.filter(f => Number(f.id) < 89);
+  const round16Fixtures = fixtures.filter(f => Number(f.id) >= 89);
 
-  const participantStats = Object.fromEntries(
-    state.participants.map(name => [name, { name, correct: 0, won: 0, net: -stakePerParticipant }])
-  );
+  const winnerStake32 = betPerMatch * round32Fixtures.length;
+  const winnerStake16 = betPerMatch * round16Fixtures.length;
+  const firstScorerStake = betFirstScorer * firstScorerFixtures.length;
+
+  const participantStats = {};
+  state.participants.forEach(name => {
+    const isLateJoiner = getParticipantsForMatch(state.participants, 73).indexOf(name) === -1;
+    const stakePerParticipant = isLateJoiner
+      ? winnerStake16 + firstScorerStake
+      : winnerStake32 + firstScorerStake;
+
+    participantStats[name] = {
+      name,
+      correct: 0,
+      won: 0,
+      net: -stakePerParticipant
+    };
+  });
 
   const matchStats = [];
 
   fixtures.forEach(f => {
+    const matchId = Number(f.id);
+    const activeParticipants = getParticipantsForMatch(state.participants, matchId);
     const match = state.matches.find(m => m.id === f.id) || { result: "", predictions: {} };
+
     const { pool, result, winners, payoutPerWinner } = computeMatchPayout({
-      participants: state.participants,
+      participants: activeParticipants,
       bet: betPerMatch,
       result: match.result || "",
       predictions: match.predictions,
@@ -74,12 +92,14 @@ export function computePayouts(state) {
   });
 
   firstScorerFixtures.forEach(f => {
+    const matchId = Number(f.id);
+    const activeParticipants = getParticipantsForMatch(state.participants, matchId);
     const match = state.matches.find(m => m.id === f.id) || {
       firstScorerResult: "",
       firstScorerPredictions: {}
     };
     const { pool, result, winners, payoutPerWinner } = computeMatchPayout({
-      participants: state.participants,
+      participants: activeParticipants,
       bet: betFirstScorer,
       result: match.firstScorerResult || "",
       predictions: match.firstScorerPredictions,
@@ -107,12 +127,18 @@ export function computePayouts(state) {
     });
   });
 
-  const totalPool = state.participants.length * stakePerParticipant;
+  // Total pool = sum of individual stakes (which vary by participant)
+  const totalPool = Object.values(participantStats).reduce((sum, p) => sum - p.net, 0);
+
+  // Use average stake per participant for display purposes
+  const avgStakePerParticipant = state.participants.length > 0
+    ? totalPool / state.participants.length
+    : 0;
 
   return {
     betPerMatch,
     betFirstScorer,
-    stakePerParticipant,
+    stakePerParticipant: avgStakePerParticipant,
     totalPool,
     firstScorerMatchCount: firstScorerFixtures.length,
     matchStats,
@@ -128,4 +154,4 @@ export function getMatchDef(state, id) {
   return state.fixtures.find(f => f.id === id);
 }
 
-export { FIRST_SCORER_NO_GOAL, isFirstScorerMatch };
+export { FIRST_SCORER_NO_GOAL, isFirstScorerMatch, getParticipantsForMatch };
