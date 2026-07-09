@@ -2,7 +2,8 @@ import { CONFIG } from "./config.js";
 import {
   DEFAULT_FIXTURES,
   DEFAULT_PARTICIPANTS,
-  DEFAULT_PARTICIPANT_META
+  DEFAULT_PARTICIPANT_META,
+  getParticipantsForMatch
 } from "./constants.js";
 
 export function createDefaultState() {
@@ -10,13 +11,17 @@ export function createDefaultState() {
   const fixtures = DEFAULT_FIXTURES.map(f => ({ ...f }));
   const participantMeta = JSON.parse(JSON.stringify(DEFAULT_PARTICIPANT_META));
 
-  const matches = fixtures.map(f => ({
-    id: f.id,
-    result: "",
-    predictions: Object.fromEntries(participants.map(p => [p, ""])),
-    firstScorerResult: "",
-    firstScorerPredictions: Object.fromEntries(participants.map(p => [p, ""]))
-  }));
+  const matches = fixtures.map(f => {
+    const matchId = Number(f.id);
+    const activeParticipants = getParticipantsForMatch(participants, matchId);
+    return {
+      id: f.id,
+      result: "",
+      predictions: Object.fromEntries(activeParticipants.map(p => [p, ""])),
+      firstScorerResult: "",
+      firstScorerPredictions: Object.fromEntries(activeParticipants.map(p => [p, ""]))
+    };
+  });
 
   return {
     participants,
@@ -53,21 +58,24 @@ function normalizeState(raw) {
 
   const existingMatches = Array.isArray(raw.matches) ? raw.matches : [];
   const matches = fixtures.map(f => {
+    const matchId = Number(f.id);
+    const activeParticipants = getParticipantsForMatch(participants, matchId);
     const existing = existingMatches.find(m => Number(m.id) === Number(f.id));
     const predictions = { ...(existing?.predictions || {}) };
-    participants.forEach(name => {
+    
+    activeParticipants.forEach(name => {
       if (!(name in predictions)) predictions[name] = "";
     });
     Object.keys(predictions).forEach(name => {
-      if (!participants.includes(name)) delete predictions[name];
+      if (!activeParticipants.includes(name)) delete predictions[name];
     });
 
     const firstScorerPredictions = { ...(existing?.firstScorerPredictions || {}) };
-    participants.forEach(name => {
+    activeParticipants.forEach(name => {
       if (!(name in firstScorerPredictions)) firstScorerPredictions[name] = "";
     });
     Object.keys(firstScorerPredictions).forEach(name => {
-      if (!participants.includes(name)) delete firstScorerPredictions[name];
+      if (!activeParticipants.includes(name)) delete firstScorerPredictions[name];
     });
 
     return {
